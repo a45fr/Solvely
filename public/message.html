@@ -1,105 +1,85 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="theme-color"
-        content="#0d0a16"
-    >
+    <meta name="theme-color" content="#0d0a16">
 
-    <title>
-        رسالة إليك 💌
-    </title>
+    <title>رسالة إليك 💌</title>
 
-    <link
-        rel="stylesheet"
-        href="/style.css"
-    >
-
+    <link rel="stylesheet" href="/style.css">
 </head>
-
 
 <body>
 
-
 <div class="background">
-
     <div class="orb orb-one"></div>
-
     <div class="orb orb-two"></div>
-
     <div class="orb orb-three"></div>
-
 </div>
-
-
 
 <main class="home">
 
-
     <div class="brand">
-
-        <div class="brand-icon">
-            💌
-        </div>
-
-        <span>
-            Solvely
-        </span>
-
+        <div class="brand-icon">💌</div>
+        <span>Solvely</span>
     </div>
-
-
 
     <section class="hero">
 
-
-        <div class="hero-icon">
+        <div class="hero-icon" id="envelope">
             💌
         </div>
 
-
         <h1>
-            عندك رسالة
+            عندك رسالة 💗
         </h1>
 
-
         <p>
-
-            <span id="name">
-                ...
-            </span>
-
-            ، شخص ما أرسل لك رسالة خاصة ✨
-
+            <span id="name">...</span>
+            ، شخص ما ترك لك شيئًا خاصًا ✨
         </p>
-
 
     </section>
 
+    <!-- شاشة فتح الرسالة -->
+    <section id="openScreen" class="message-card">
 
+        <div class="big-envelope">
+            💌
+        </div>
 
-    <section class="result message-card">
+        <h2>
+            رسالة خاصة إليك
+        </h2>
 
+        <p>
+            اضغط حتى تكتشف شنو مكتوب إلك 👀
+        </p>
+
+        <button id="openMessage" class="open-btn">
+            افتح رسالتك 💗
+        </button>
+
+    </section>
+
+    <!-- الرسالة -->
+    <section
+        id="messageCard"
+        class="result message-card"
+        style="display:none;"
+    >
 
         <div class="result-icon">
             💌
         </div>
 
-
         <h2>
-            رسالة خاصة
+            إليك رسالة خاصة
         </h2>
-
 
         <div
             id="message"
@@ -108,93 +88,76 @@
             جاري فتح الرسالة...
         </div>
 
-
         <div class="message-footer">
-
             وصلت إليك بمحبة ❤️
-
         </div>
 
-
     </section>
-
-
 
     <button
         id="shareButton"
         class="share-btn"
     >
-
         أرسل رسالة أنت أيضًا ✨
-
     </button>
-
-
 
     <div class="features">
 
-
         <div>
-
-            <span>
-                🔒
-            </span>
-
-            <p>
-                خاص
-            </p>
-
+            <span>🔒</span>
+            <p>خاص</p>
         </div>
 
-
         <div>
-
-            <span>
-                💌
-            </span>
-
-            <p>
-                رسالة
-            </p>
-
+            <span>💌</span>
+            <p>رسالة</p>
         </div>
 
-
         <div>
-
-            <span>
-                ✨
-            </span>
-
-            <p>
-                Solvely
-            </p>
-
+            <span>✨</span>
+            <p>Solvely</p>
         </div>
-
 
     </div>
 
-
-
     <footer>
-
         Solvely
         <span>•</span>
         رسالتك، بطريقتك ❤️
-
     </footer>
-
 
 </main>
 
+<script src="/message.js"></script>
 
+<script>
+    const openButton = document.getElementById("openMessage");
+    const openScreen = document.getElementById("openScreen");
+    const messageCard = document.getElementById("messageCard");
+    const envelope = document.getElementById("envelope");
 
-<script
-    src="/message.js"
-></script>
+    openButton.addEventListener("click", () => {
 
+        envelope.style.transform = "scale(1.2) rotate(8deg)";
+
+        openScreen.style.opacity = "0";
+        openScreen.style.transform = "scale(0.9)";
+
+        setTimeout(() => {
+
+            openScreen.style.display = "none";
+
+            messageCard.style.display = "block";
+
+            setTimeout(() => {
+                messageCard.style.opacity = "1";
+                messageCard.style.transform = "translateY(0) scale(1)";
+            }, 50);
+
+        }, 400);
+
+    });
+</script>
 
 </body>
-
 </html>
