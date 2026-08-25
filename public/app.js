@@ -1,77 +1,95 @@
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+const nameInput = document.getElementById("name");
+const messageInput = document.getElementById("message");
+const count = document.getElementById("count");
+const createBtn = document.getElementById("createBtn");
+const result = document.getElementById("result");
+const generatedLink = document.getElementById("generatedLink");
+const copyBtn = document.getElementById("copyBtn");
+const shareBtn = document.getElementById("shareBtn");
 
-    // إنشاء رسالة
-    if (url.pathname === "/api/create" && request.method === "POST") {
-      try {
-        const data = await request.json();
+messageInput.addEventListener("input", () => {
+  count.textContent = `${messageInput.value.length} / 500`;
+});
 
-        if (!data.name || !data.message) {
-          return Response.json(
-            { error: "الاسم والرسالة مطلوبان" },
-            { status: 400 }
-          );
-        }
+createBtn.addEventListener("click", async () => {
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
 
-        const payload = JSON.stringify({
-          name: data.name,
-          message: data.message
-        });
-
-        const encoded = btoa(
-          unescape(encodeURIComponent(payload))
-        )
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
-
-        return Response.json({
-          success: true,
-          url: `${url.origin}/message/${encoded}`
-        });
-
-      } catch (error) {
-        return Response.json(
-          { error: "تعذر إنشاء الرابط" },
-          { status: 400 }
-        );
-      }
-    }
-
-    // فتح الرسالة
-    if (url.pathname.startsWith("/api/message/")) {
-      try {
-        const id = url.pathname.split("/").pop();
-
-        const base64 = id
-          .replace(/-/g, "+")
-          .replace(/_/g, "/")
-          .padEnd(id.length + (4 - id.length % 4) % 4, "=");
-
-        const json = decodeURIComponent(
-          escape(atob(base64))
-        );
-
-        const data = JSON.parse(json);
-
-        return Response.json(data);
-
-      } catch {
-        return Response.json(
-          { error: "الرابط غير صحيح ❌" },
-          { status: 404 }
-        );
-      }
-    }
-
-    // فتح صفحة الرسالة
-    if (url.pathname.startsWith("/message/")) {
-      return env.ASSETS.fetch(
-        new Request(new URL("/message.html", request.url), request)
-      );
-    }
-
-    return env.ASSETS.fetch(request);
+  if (!name) {
+    alert("اكتب اسم الشخص أولاً 💜");
+    return;
   }
-};
+
+  if (!message) {
+    alert("اكتب الرسالة أولاً 💌");
+    return;
+  }
+
+  createBtn.disabled = true;
+  createBtn.textContent = "جاري إنشاء الرابط... ⏳";
+
+  try {
+    const response = await fetch("/api/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: name,
+        message: message
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "حدث خطأ");
+    }
+
+    generatedLink.value = data.url;
+    result.classList.remove("hidden");
+
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+  } catch (error) {
+    alert("ما قدر ينشئ الرابط ❌\n" + error.message);
+  }
+
+  createBtn.disabled = false;
+  createBtn.innerHTML = `
+    <span>إنشاء الرابط</span>
+    <span>✨</span>
+  `;
+});
+
+copyBtn.addEventListener("click", async () => {
+  if (!generatedLink.value) return;
+
+  await navigator.clipboard.writeText(generatedLink.value);
+
+  copyBtn.textContent = "تم ✓";
+
+  setTimeout(() => {
+    copyBtn.textContent = "نسخ";
+  }, 2000);
+});
+
+shareBtn.addEventListener("click", async () => {
+  const url = generatedLink.value;
+
+  if (!url) return;
+
+  if (navigator.share) {
+    await navigator.share({
+      title: "رسالة من Solvely 💌",
+      text: "وصلك رابط رسالة 💌",
+      url: url
+    });
+  } else {
+    await navigator.clipboard.writeText(url);
+    alert("تم نسخ الرابط ❤️");
+  }
+});
