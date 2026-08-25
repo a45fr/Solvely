@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#100d1d"
+    >
+
+    <title>
+        Solvely 💌
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="background">
+
+    <div class="orb orb-one"></div>
+
+    <div class="orb orb-two"></div>
+
+    <div class="orb orb-three"></div>
+
+</div>
+
+
+
+<main class="home">
+
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            💌
+        </div>
+
+        <span>
+            Solvely
+        </span>
+
+    </div>
+
+
+
+    <section class="hero">
+
+
+        <div class="hero-icon">
+            💌
+        </div>
+
+
+        <h1>
+            عندك كلام؟
+        </h1>
+
+
+        <p>
+            اكتب رسالتك وخليها توصل
+            للشخص المناسب بطريقة مميزة ✨
+        </p>
+
+
+    </section>
+
+
+
+    <section class="card">
+
+
+        <div class="card-title">
+
+            <span>
+                ✨
+            </span>
+
+            <div>
+
+                <strong>
+                    أنشئ رسالة
+                </strong>
+
+                <small>
+                    وتقدر تشاركها برابط خاص
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <label>
+            اسم الشخص
+        </label>
+
+
+        <div class="input-wrapper">
+
+            <span>
+                👤
+            </span>
+
+            <input
+                id="name"
+                type="text"
+                maxlength="30"
+                autocomplete="off"
+                placeholder="مثلاً: جعفر"
+            >
+
+        </div>
+
+
+
+        <label>
+            الرسالة
+        </label>
+
+
+        <div class="textarea-wrapper">
+
+            <textarea
+                id="message"
+                maxlength="500"
+                placeholder="اكتب الشي اللي بخاطرك..."
+            ></textarea>
+
+            <span
+                id="count"
+                class="counter"
+            >
+                0 / 500
+            </span>
+
+        </div>
+
+
+
+        <button
+            id="createBtn"
+            class="create-btn"
+        >
+
+            <span>
+                إنشاء الرابط
+            </span>
+
+            <span>
+                ✨
+            </span>
+
+        </button>
+
+
+    </section>
+
+
+
+    <section
+        id="result"
+        class="result hidden"
+    >
+
+
+        <div class="result-icon">
+            🎉
+        </div>
+
+
+        <h2>
+            تم إنشاء رسالتك!
+        </h2>
+
+
+        <p>
+            انسخ الرابط وأرسله للشخص
+        </p>
+
+
+        <div class="link-box">
+
+            <input
+                id="generatedLink"
+                readonly
+            >
+
+            <button id="copyBtn">
+                نسخ
+            </button>
+
+        </div>
+
+
+        <button
+            id="shareBtn"
+            class="share-btn"
+        >
+            مشاركة الرابط 📤
+        </button>
+
+
+    </section>
+
+
+
+    <div class="features">
+
+
+        <div>
+
+            <span>
+                🔒
+            </span>
+
+            <p>
+                خاص
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                ⚡
+            </span>
+
+            <p>
+                سريع
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                💌
+            </span>
+
+            <p>
+                بسيط
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <footer>
+
+        Solvely
+        <span>•</span>
+        رسالتك، بطريقتك ❤️
+
+    </footer>
+
+
+</main>
+
+
+
+<script src="/app.js"></script>
+
+
+</body>
+
+</html>
