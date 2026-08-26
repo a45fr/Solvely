@@ -1,149 +1,224 @@
 export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+    async fetch(request, env) {
 
-    // ==============================
-    // إنشاء رسالة
-    // ==============================
-    if (
-      url.pathname === "/api/create" &&
-      request.method === "POST"
-    ) {
-      try {
-        const data = await request.json();
+        const url = new URL(request.url);
+        const path = url.pathname;
 
-        const name = String(data.name || "").trim();
-        const message = String(data.message || "").trim();
 
-        if (!name) {
-          return Response.json(
-            { error: "اكتب اسم الشخص أولاً 💜" },
-            { status: 400 }
-          );
+        // =====================================
+        // إنشاء رسالة جديدة
+        // =====================================
+
+        if (
+            path === "/api/create" &&
+            request.method === "POST"
+        ) {
+
+            try {
+
+                const body =
+                    await request.json();
+
+                const name =
+                    String(body.name || "").trim();
+
+                const message =
+                    String(body.message || "").trim();
+
+
+                if (!name) {
+
+                    return Response.json(
+                        {
+                            error:
+                                "اسم الشخص مطلوب"
+                        },
+                        {
+                            status: 400
+                        }
+                    );
+                }
+
+
+                if (!message) {
+
+                    return Response.json(
+                        {
+                            error:
+                                "الرسالة مطلوبة"
+                        },
+                        {
+                            status: 400
+                        }
+                    );
+                }
+
+
+                if (message.length > 1000) {
+
+                    return Response.json(
+                        {
+                            error:
+                                "الرسالة طويلة جدًا"
+                        },
+                        {
+                            status: 400
+                        }
+                    );
+                }
+
+
+                // إنشاء ID عشوائي
+
+                const id =
+                    crypto.randomUUID()
+                        .replaceAll("-", "")
+                        .slice(0, 12);
+
+
+                // تخزين الرسالة
+
+                await env.KV.put(
+                    `message:${id}`,
+                    JSON.stringify({
+                        name,
+                        message,
+                        createdAt:
+                            Date.now()
+                    })
+                );
+
+
+                // الرابط
+
+                const messageUrl =
+                    `${url.origin}/message/${id}`;
+
+
+                return Response.json({
+                    success: true,
+                    url: messageUrl,
+                    id
+                });
+
+            } catch (error) {
+
+                return Response.json(
+                    {
+                        error:
+                            "تعذر إنشاء الرسالة"
+                    },
+                    {
+                        status: 500
+                    }
+                );
+            }
         }
 
-        if (!message) {
-          return Response.json(
-            { error: "اكتب الرسالة أولاً 💌" },
-            { status: 400 }
-          );
+
+
+        // =====================================
+        // جلب رسالة
+        // =====================================
+
+        if (
+            path.startsWith("/api/message/") &&
+            request.method === "GET"
+        ) {
+
+            try {
+
+                const id =
+                    decodeURIComponent(
+                        path.replace(
+                            "/api/message/",
+                            ""
+                        )
+                    );
+
+
+                if (!id) {
+
+                    return Response.json(
+                        {
+                            error:
+                                "الرابط غير صحيح"
+                        },
+                        {
+                            status: 400
+                        }
+                    );
+                }
+
+
+                const stored =
+                    await env.KV.get(
+                        `message:${id}`
+                    );
+
+
+                if (!stored) {
+
+                    return Response.json(
+                        {
+                            error:
+                                "الرسالة غير موجودة أو انتهت"
+                        },
+                        {
+                            status: 404
+                        }
+                    );
+                }
+
+
+                const data =
+                    JSON.parse(stored);
+
+
+                return Response.json({
+                    name: data.name,
+                    message: data.message
+                });
+
+            } catch (error) {
+
+                return Response.json(
+                    {
+                        error:
+                            "تعذر فتح الرسالة"
+                    },
+                    {
+                        status: 500
+                    }
+                );
+            }
         }
 
-        if (name.length > 40) {
-          return Response.json(
-            { error: "الاسم طويل جدًا" },
-            { status: 400 }
-          );
+
+
+        // =====================================
+        // صفحة الرسالة
+        // /message/XXXXXXXX
+        // =====================================
+
+        if (
+            path.startsWith("/message/")
+        ) {
+
+            return env.ASSETS.fetch(
+                new Request(
+                    `${url.origin}/message.html`,
+                    request
+                )
+            );
         }
 
-        if (message.length > 1000) {
-          return Response.json(
-            { error: "الرسالة طويلة جدًا" },
-            { status: 400 }
-          );
-        }
 
-        // ID قصير وعشوائي
-        const id = crypto.randomUUID()
-          .replaceAll("-", "")
-          .slice(0, 8);
 
-        await env.SOLVELY_MESSAGES.put(
-          id,
-          JSON.stringify({
-            name,
-            message,
-            createdAt: new Date().toISOString()
-          })
-        );
+        // =====================================
+        // باقي ملفات الموقع
+        // =====================================
 
-        return Response.json({
-          success: true,
-          id,
-          url: `${url.origin}/message/${id}`
-        });
-
-      } catch (error) {
-        return Response.json(
-          {
-            error: "تعذر إنشاء الرابط"
-          },
-          { status: 500 }
-        );
-      }
+        return env.ASSETS.fetch(request);
     }
-
-
-    // ==============================
-    // جلب الرسالة
-    // ==============================
-    if (
-      url.pathname.startsWith("/api/message/") &&
-      request.method === "GET"
-    ) {
-      try {
-        const id =
-          url.pathname
-            .split("/")
-            .pop();
-
-        if (!id) {
-          return Response.json(
-            { error: "الرابط غير صحيح" },
-            { status: 400 }
-          );
-        }
-
-        const saved =
-          await env.SOLVELY_MESSAGES.get(id);
-
-        if (!saved) {
-          return Response.json(
-            {
-              error:
-                "هذه الرسالة غير موجودة أو انتهت ❌"
-            },
-            { status: 404 }
-          );
-        }
-
-        return Response.json(
-          JSON.parse(saved)
-        );
-
-      } catch (error) {
-        return Response.json(
-          {
-            error:
-              "حدث خطأ أثناء فتح الرسالة"
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-
-    // ==============================
-    // صفحة الرسالة
-    // ==============================
-    if (
-      url.pathname.startsWith("/message/")
-    ) {
-      return env.ASSETS.fetch(
-        new Request(
-          new URL(
-            "/message.html",
-            request.url
-          ),
-          request
-        )
-      );
-    }
-
-
-    // ==============================
-    // ملفات الموقع
-    // ==============================
-    return env.ASSETS.fetch(request);
-  }
 };
