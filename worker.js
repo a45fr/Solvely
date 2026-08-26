@@ -2,73 +2,148 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // إنشاء الرابط
-    if (url.pathname === "/api/create" && request.method === "POST") {
+    // ==============================
+    // إنشاء رسالة
+    // ==============================
+    if (
+      url.pathname === "/api/create" &&
+      request.method === "POST"
+    ) {
       try {
         const data = await request.json();
 
-        if (!data.name || !data.message) {
-          return new Response(
-            JSON.stringify({
-              error: "الاسم والرسالة مطلوبان"
-            }),
-            {
-              status: 400,
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
+        const name = String(data.name || "").trim();
+        const message = String(data.message || "").trim();
+
+        if (!name) {
+          return Response.json(
+            { error: "اكتب اسم الشخص أولاً 💜" },
+            { status: 400 }
           );
         }
 
-        const messageData = {
-          name: data.name,
-          message: data.message
-        };
+        if (!message) {
+          return Response.json(
+            { error: "اكتب الرسالة أولاً 💌" },
+            { status: 400 }
+          );
+        }
 
-        const encoded = encodeURIComponent(
-          JSON.stringify(messageData)
-        );
+        if (name.length > 40) {
+          return Response.json(
+            { error: "الاسم طويل جدًا" },
+            { status: 400 }
+          );
+        }
 
-        return new Response(
+        if (message.length > 1000) {
+          return Response.json(
+            { error: "الرسالة طويلة جدًا" },
+            { status: 400 }
+          );
+        }
+
+        // ID قصير وعشوائي
+        const id = crypto.randomUUID()
+          .replaceAll("-", "")
+          .slice(0, 8);
+
+        await env.SOLVELY_MESSAGES.put(
+          id,
           JSON.stringify({
-            success: true,
-            url: `${url.origin}/message?data=${encoded}`
-          }),
-          {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
+            name,
+            message,
+            createdAt: new Date().toISOString()
+          })
         );
+
+        return Response.json({
+          success: true,
+          id,
+          url: `${url.origin}/message/${id}`
+        });
 
       } catch (error) {
-        return new Response(
-          JSON.stringify({
-            error: "حدث خطأ أثناء إنشاء الرابط"
-          }),
+        return Response.json(
           {
-            status: 500,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
+            error: "تعذر إنشاء الرابط"
+          },
+          { status: 500 }
         );
       }
     }
 
-    // فتح صفحة الرسالة
-    if (url.pathname === "/message") {
+
+    // ==============================
+    // جلب الرسالة
+    // ==============================
+    if (
+      url.pathname.startsWith("/api/message/") &&
+      request.method === "GET"
+    ) {
+      try {
+        const id =
+          url.pathname
+            .split("/")
+            .pop();
+
+        if (!id) {
+          return Response.json(
+            { error: "الرابط غير صحيح" },
+            { status: 400 }
+          );
+        }
+
+        const saved =
+          await env.SOLVELY_MESSAGES.get(id);
+
+        if (!saved) {
+          return Response.json(
+            {
+              error:
+                "هذه الرسالة غير موجودة أو انتهت ❌"
+            },
+            { status: 404 }
+          );
+        }
+
+        return Response.json(
+          JSON.parse(saved)
+        );
+
+      } catch (error) {
+        return Response.json(
+          {
+            error:
+              "حدث خطأ أثناء فتح الرسالة"
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+
+    // ==============================
+    // صفحة الرسالة
+    // ==============================
+    if (
+      url.pathname.startsWith("/message/")
+    ) {
       return env.ASSETS.fetch(
         new Request(
-          new URL("/message.html", request.url),
+          new URL(
+            "/message.html",
+            request.url
+          ),
           request
         )
       );
     }
 
-    // باقي الموقع
+
+    // ==============================
+    // ملفات الموقع
+    // ==============================
     return env.ASSETS.fetch(request);
   }
 };
