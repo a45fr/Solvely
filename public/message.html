@@ -16,49 +16,34 @@
 
     <title>رسالة إليك 💌</title>
 
-    <link
-        rel="stylesheet"
-        href="/style.css"
-    >
+    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
 <div class="background">
-
     <div class="orb orb-one"></div>
     <div class="orb orb-two"></div>
     <div class="orb orb-three"></div>
 
     <div class="stars">
-        ✦　·　✧　　·　✦　·　✧
+        ✦ · ✧ · ✦ · ✧ · ✦
     </div>
-
 </div>
 
+<div id="particles"></div>
 
 <main class="home">
 
-    <!-- الشعار -->
-
     <header class="brand">
-
-        <div class="brand-icon">
-            💌
-        </div>
+        <div class="brand-icon">💌</div>
 
         <div>
             <strong>Solvely</strong>
-
-            <small>
-                رسالة من القلب
-            </small>
+            <small>رسالة من القلب</small>
         </div>
-
     </header>
 
-
-    <!-- المقدمة -->
 
     <section class="hero">
 
@@ -74,24 +59,18 @@
         </div>
 
         <h1>
-
-            <span id="name">
-                شخص
-            </span>
-
+            <span id="name">شخص</span>
             ، عندك رسالة
-
         </h1>
 
         <p>
-            شخص ما ترك لك كلامًا
-            خاصًا ✨
+            شخص ما ترك لك كلامًا خاصًا ✨
         </p>
 
     </section>
 
 
-    <!-- شاشة الانتظار -->
+    <!-- شاشة المفاجأة -->
 
     <section
         id="openScreen"
@@ -102,20 +81,30 @@
             💌
         </div>
 
+        <div class="secret-label">
+            رسالة مخفية
+        </div>
+
         <h2>
             في رسالة تنتظرك
         </h2>
 
         <p>
-            اضغط حتى تكتشف شنو مكتوب إلك
+            يمكن بيها كلام حلو...
+            يمكن مفاجأة 👀
         </p>
 
         <button
             id="openMessage"
             class="open-btn"
         >
-            افتح رسالتك 💗
+            <span>افتح رسالتك</span>
+            <span>💗</span>
         </button>
+
+        <div class="tap-hint">
+            اضغط مرة واحدة فقط ✨
+        </div>
 
     </section>
 
@@ -124,16 +113,20 @@
 
     <section
         id="messageCard"
-        class="result message-card"
+        class="result message-card revealed-message"
         style="display:none;"
     >
 
-        <div class="result-icon">
+        <div class="message-top-icon">
             💌
         </div>
 
-        <h2>
+        <div class="secret-label">
             رسالة خاصة إليك
+        </div>
+
+        <h2>
+            من شخص يريد يقولك...
         </h2>
 
         <div
@@ -150,72 +143,44 @@
     </section>
 
 
-    <!-- زر إنشاء رسالة -->
-
     <button
         id="shareButton"
         class="share-btn"
     >
-        أرسل رسالة أنت أيضًا ✨
+        أرسل رسالة أنت أيضًا
+        <span>✨</span>
     </button>
 
-
-    <!-- المميزات -->
 
     <section class="features">
 
         <div class="feature">
-
             <div>🔒</div>
-
-            <span>
-                خاصة
-            </span>
-
+            <span>خاصة</span>
         </div>
 
-
         <div class="feature">
-
             <div>💌</div>
-
-            <span>
-                من القلب
-            </span>
-
+            <span>من القلب</span>
         </div>
 
-
         <div class="feature">
-
             <div>✨</div>
-
-            <span>
-                Solvely
-            </span>
-
+            <span>Solvely</span>
         </div>
 
     </section>
 
 
     <footer>
-
-        <strong>
-            Solvely
-        </strong>
-
+        <strong>Solvely</strong>
         <span>•</span>
-
         رسالتك، بطريقتك ❤️
-
     </footer>
 
 </main>
 
-
 <script src="/message.js"></script>
 
 </body>
-
 </html>
