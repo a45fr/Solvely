@@ -1,11 +1,11 @@
-const nameElement = document.getElementById("name");
-const messageElement = document.getElementById("message");
+const nameElement =
+    document.getElementById("name");
 
-const shareButton = document.getElementById("shareButton");
-const openScreen = document.getElementById("openScreen");
-const messageCard = document.getElementById("messageCard");
-const openButton = document.getElementById("openMessage");
-const envelope = document.getElementById("envelope");
+const messageElement =
+    document.getElementById("message");
+
+const shareButton =
+    document.getElementById("shareButton");
 
 
 // =====================================
@@ -14,25 +14,23 @@ const envelope = document.getElementById("envelope");
 
 function getMessageId() {
 
-    const parts = window.location.pathname
-        .split("/")
-        .filter(Boolean);
+    const parts =
+        window.location.pathname
+            .split("/")
+            .filter(Boolean);
 
     const messageIndex =
         parts.indexOf("message");
 
     if (
-        messageIndex === -1 ||
-        !parts[messageIndex + 1]
+        messageIndex !== -1 &&
+        parts[messageIndex + 1]
     ) {
-        return null;
+        return parts[messageIndex + 1];
     }
 
-    return parts[messageIndex + 1];
+    return null;
 }
-
-
-const messageId = getMessageId();
 
 
 // =====================================
@@ -41,14 +39,18 @@ const messageId = getMessageId();
 
 async function loadMessage() {
 
+    const messageId =
+        getMessageId();
+
+
+    // إذا ماكو ID
     if (!messageId) {
 
-        nameElement.textContent = "عذرًا";
+        nameElement.textContent =
+            "عذرًا";
 
         messageElement.textContent =
             "الرابط غير صحيح ❌";
-
-        openScreen.style.display = "none";
 
         return;
     }
@@ -56,28 +58,27 @@ async function loadMessage() {
 
     try {
 
-        const response = await fetch(
-            `/api/message/${encodeURIComponent(messageId)}`,
-            {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-            }
-        );
+        const response =
+            await fetch(
+                `/api/message/${encodeURIComponent(messageId)}`
+            );
 
 
-        const text = await response.text();
+        const text =
+            await response.text();
 
 
         let data;
 
         try {
-            data = JSON.parse(text);
+
+            data =
+                JSON.parse(text);
+
         } catch {
 
             throw new Error(
-                "السيرفر رجّع استجابة غير صحيحة"
+                "السيرفر لم يرجع بيانات صحيحة ❌"
             );
         }
 
@@ -91,30 +92,34 @@ async function loadMessage() {
         }
 
 
-        if (
-            !data.name ||
-            !data.message
-        ) {
-
-            throw new Error(
-                "بيانات الرسالة ناقصة ❌"
-            );
-        }
-
+        // =================================
+        // عرض البيانات
+        // =================================
 
         nameElement.textContent =
-            data.name;
+            data.name || "شخص ما";
 
         messageElement.textContent =
-            data.message;
+            data.message || "لا توجد رسالة";
+
+
+        // إظهار بطاقة الرسالة
+        const result =
+            document.querySelector(".result");
+
+        if (result) {
+
+            result.classList.remove("hidden");
+
+            result.style.display =
+                "block";
+
+        }
 
 
     } catch (error) {
 
-        console.error(
-            "Message error:",
-            error
-        );
+        console.error(error);
 
         nameElement.textContent =
             "عذرًا";
@@ -123,71 +128,39 @@ async function loadMessage() {
             error.message ||
             "تعذر تحميل الرسالة ❌";
 
-        openScreen.style.display =
-            "none";
+
+        const result =
+            document.querySelector(".result");
+
+        if (result) {
+
+            result.classList.remove("hidden");
+
+            result.style.display =
+                "block";
+
+        }
+
     }
+
 }
 
 
 // =====================================
-// فتح الرسالة
+// زر إرسال رسالة جديدة
 // =====================================
 
-openButton.addEventListener(
-    "click",
-    () => {
+if (shareButton) {
 
-        envelope.style.transform =
-            "scale(1.25) rotate(8deg)";
+    shareButton.addEventListener(
+        "click",
+        () => {
 
-        openButton.disabled = true;
+            window.location.href = "/";
+        }
+    );
 
-        openScreen.style.opacity = "0";
-
-        openScreen.style.transform =
-            "translateY(15px) scale(.96)";
-
-
-        setTimeout(() => {
-
-            openScreen.style.display =
-                "none";
-
-            messageCard.style.display =
-                "block";
-
-            messageCard.style.opacity =
-                "0";
-
-            messageCard.style.transform =
-                "translateY(20px) scale(.96)";
-
-
-            requestAnimationFrame(() => {
-
-                messageCard.style.opacity =
-                    "1";
-
-                messageCard.style.transform =
-                    "translateY(0) scale(1)";
-            });
-
-        }, 450);
-    }
-);
-
-
-// =====================================
-// إنشاء رسالة جديدة
-// =====================================
-
-shareButton.addEventListener(
-    "click",
-    () => {
-
-        window.location.href = "/";
-    }
-);
+}
 
 
 // =====================================
