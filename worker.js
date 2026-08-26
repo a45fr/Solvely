@@ -2,29 +2,23 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // إنشاء رابط رسالة
+    // =========================
+    // إنشاء رابط الرسالة
+    // =========================
     if (url.pathname === "/api/create" && request.method === "POST") {
       try {
-        const body = await request.text();
-
-        if (!body) {
-          return new Response(
-            JSON.stringify({ error: "لم تصل بيانات الرسالة" }),
-            {
-              status: 400,
-              headers: { "Content-Type": "application/json" }
-            }
-          );
-        }
-
-        const data = JSON.parse(body);
+        const data = await request.json();
 
         if (!data.name || !data.message) {
           return new Response(
-            JSON.stringify({ error: "الاسم والرسالة مطلوبان" }),
+            JSON.stringify({
+              error: "الاسم والرسالة مطلوبان"
+            }),
             {
               status: 400,
-              headers: { "Content-Type": "application/json" }
+              headers: {
+                "Content-Type": "application/json"
+              }
             }
           );
         }
@@ -34,17 +28,12 @@ export default {
           message: data.message
         });
 
-        const encoded = btoa(
-          unescape(encodeURIComponent(payload))
-        )
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+        const id = encodeURIComponent(payload);
 
         return new Response(
           JSON.stringify({
             success: true,
-            url: `${url.origin}/message/${encoded}`
+            url: `${url.origin}/message/${id}`
           }),
           {
             status: 200,
@@ -57,8 +46,7 @@ export default {
       } catch (error) {
         return new Response(
           JSON.stringify({
-            error: "خطأ في إنشاء الرابط",
-            details: error.message
+            error: "تعذر إنشاء الرابط"
           }),
           {
             status: 500,
@@ -70,21 +58,19 @@ export default {
       }
     }
 
-    // قراءة الرسالة
+
+    // =========================
+    // فتح الرسالة
+    // =========================
     if (url.pathname.startsWith("/api/message/")) {
       try {
-        const id = url.pathname.split("/").pop();
-
-        const base64 = id
-          .replace(/-/g, "+")
-          .replace(/_/g, "/")
-          .padEnd(id.length + (4 - id.length % 4) % 4, "=");
-
-        const json = decodeURIComponent(
-          escape(atob(base64))
+        const id = url.pathname.substring(
+          "/api/message/".length
         );
 
-        const data = JSON.parse(json);
+        const data = JSON.parse(
+          decodeURIComponent(id)
+        );
 
         return new Response(
           JSON.stringify(data),
@@ -111,7 +97,10 @@ export default {
       }
     }
 
+
+    // =========================
     // صفحة الرسالة
+    // =========================
     if (url.pathname.startsWith("/message/")) {
       return env.ASSETS.fetch(
         new Request(
@@ -121,7 +110,10 @@ export default {
       );
     }
 
+
+    // =========================
     // باقي ملفات الموقع
+    // =========================
     return env.ASSETS.fetch(request);
   }
 };
