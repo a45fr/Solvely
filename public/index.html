@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -13,276 +11,275 @@
 
     <meta
         name="theme-color"
-        content="#100d1d"
+        content="#090611"
     >
 
-    <title>
-        Solvely 💌
-    </title>
+    <meta
+        name="description"
+        content="Solvely — اصنع رسالة خاصة وشاركها برابط."
+    >
+
+    <title>Solvely 💌</title>
 
     <link
         rel="stylesheet"
         href="/style.css"
     >
-
 </head>
-
 
 <body>
 
+    <!-- الخلفية -->
 
-<div class="background">
+    <div class="background">
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+        <div class="orb orb-three"></div>
 
-    <div class="orb orb-one"></div>
-
-    <div class="orb orb-two"></div>
-
-    <div class="orb orb-three"></div>
-
-</div>
-
-
-
-<main class="home">
-
-
-    <div class="brand">
-
-        <div class="brand-icon">
-            💌
+        <div class="stars">
+            ✦　·　✧　　·　✦　·　✧
         </div>
-
-        <span>
-            Solvely
-        </span>
-
     </div>
 
 
+    <!-- الصفحة -->
 
-    <section class="hero">
+    <main class="home">
 
+        <!-- الشعار -->
 
-        <div class="hero-icon">
-            💌
-        </div>
+        <header class="brand">
 
-
-        <h1>
-            عندك كلام؟
-        </h1>
-
-
-        <p>
-            اكتب رسالتك وخليها توصل
-            للشخص المناسب بطريقة مميزة ✨
-        </p>
-
-
-    </section>
-
-
-
-    <section class="card">
-
-
-        <div class="card-title">
-
-            <span>
-                ✨
-            </span>
+            <div class="brand-icon">
+                💌
+            </div>
 
             <div>
-
                 <strong>
-                    أنشئ رسالة
+                    Solvely
                 </strong>
 
                 <small>
-                    وتقدر تشاركها برابط خاص
+                    رسالة من القلب
                 </small>
+            </div>
+
+        </header>
+
+
+        <!-- Hero -->
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                ✨ رسالة خاصة لك
+            </div>
+
+            <div class="hero-icon">
+                💌
+            </div>
+
+            <h1>
+                عندك كلام
+                <span>بخاطرك؟</span>
+            </h1>
+
+            <p>
+                اكتب رسالتك، اصنع رابطًا خاصًا،
+                وخلي الشخص يكتشفها بنفسه.
+            </p>
+
+        </section>
+
+
+        <!-- الكارد الرئيسي -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="heading-icon">
+                    ✍️
+                </div>
+
+                <div>
+                    <h2>
+                        اصنع رسالتك
+                    </h2>
+
+                    <p>
+                        اكتبها مثل ما تحب
+                    </p>
+                </div>
 
             </div>
 
-        </div>
+
+            <!-- الاسم -->
+
+            <label for="name">
+                الرسالة إلى
+            </label>
+
+            <div class="input-box">
+
+                <span>
+                    👤
+                </span>
+
+                <input
+                    id="name"
+                    type="text"
+                    maxlength="40"
+                    autocomplete="off"
+                    placeholder="اكتب اسم الشخص"
+                >
+
+            </div>
 
 
+            <!-- الرسالة -->
 
-        <label>
-            اسم الشخص
-        </label>
+            <label for="message">
+                رسالتك
+            </label>
+
+            <div class="textarea-box">
+
+                <textarea
+                    id="message"
+                    maxlength="1000"
+                    placeholder="اكتب كل اللي بخاطرك..."
+                ></textarea>
+
+                <div
+                    id="count"
+                    class="counter"
+                >
+                    0 / 1000
+                </div>
+
+            </div>
 
 
-        <div class="input-wrapper">
+            <!-- زر الإنشاء -->
 
-            <span>
-                👤
-            </span>
-
-            <input
-                id="name"
-                type="text"
-                maxlength="30"
-                autocomplete="off"
-                placeholder="مثلاً: جعفر"
+            <button
+                id="createBtn"
+                class="create-btn"
             >
 
-        </div>
+                <span>
+                    إنشاء الرابط
+                </span>
 
+                <span class="button-arrow">
+                    ←
+                </span>
 
-
-        <label>
-            الرسالة
-        </label>
-
-
-        <div class="textarea-wrapper">
-
-            <textarea
-                id="message"
-                maxlength="500"
-                placeholder="اكتب الشي اللي بخاطرك..."
-            ></textarea>
-
-            <span
-                id="count"
-                class="counter"
-            >
-                0 / 500
-            </span>
-
-        </div>
-
-
-
-        <button
-            id="createBtn"
-            class="create-btn"
-        >
-
-            <span>
-                إنشاء الرابط
-            </span>
-
-            <span>
-                ✨
-            </span>
-
-        </button>
-
-
-    </section>
-
-
-
-    <section
-        id="result"
-        class="result hidden"
-    >
-
-
-        <div class="result-icon">
-            🎉
-        </div>
-
-
-        <h2>
-            تم إنشاء رسالتك!
-        </h2>
-
-
-        <p>
-            انسخ الرابط وأرسله للشخص
-        </p>
-
-
-        <div class="link-box">
-
-            <input
-                id="generatedLink"
-                readonly
-            >
-
-            <button id="copyBtn">
-                نسخ
             </button>
 
-        </div>
+
+            <div class="privacy-note">
+                🔒 رسالتك ما تظهر إلا للشخص اللي عنده الرابط
+            </div>
+
+        </section>
 
 
-        <button
-            id="shareBtn"
-            class="share-btn"
+        <!-- النتيجة -->
+
+        <section
+            id="result"
+            class="result hidden"
         >
-            مشاركة الرابط 📤
-        </button>
 
+            <div class="success-icon">
+                🎉
+            </div>
 
-    </section>
-
-
-
-    <div class="features">
-
-
-        <div>
-
-            <span>
-                🔒
-            </span>
+            <h2>
+                الرابط جاهز!
+            </h2>
 
             <p>
-                خاص
+                انسخه وأرسله للشخص
             </p>
 
-        </div>
+
+            <div class="link-box">
+
+                <input
+                    id="generatedLink"
+                    readonly
+                >
+
+                <button id="copyBtn">
+                    نسخ
+                </button>
+
+            </div>
 
 
-        <div>
+            <button
+                id="shareBtn"
+                class="share-btn"
+            >
+                مشاركة الرابط
+                📤
+            </button>
+
+        </section>
+
+
+        <!-- المميزات -->
+
+        <section class="features">
+
+            <div class="feature">
+                <div>🔒</div>
+                <span>
+                    خاص
+                </span>
+            </div>
+
+            <div class="feature">
+                <div>⚡</div>
+                <span>
+                    سريع
+                </span>
+            </div>
+
+            <div class="feature">
+                <div>💌</div>
+                <span>
+                    بسيط
+                </span>
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+
+        <footer>
+
+            <strong>
+                Solvely
+            </strong>
 
             <span>
-                ⚡
+                •
             </span>
 
-            <p>
-                سريع
-            </p>
+            رسالتك، بطريقتك ❤️
 
-        </div>
+        </footer>
 
-
-        <div>
-
-            <span>
-                💌
-            </span>
-
-            <p>
-                بسيط
-            </p>
-
-        </div>
+    </main>
 
 
-    </div>
-
-
-
-    <footer>
-
-        Solvely
-        <span>•</span>
-        رسالتك، بطريقتك ❤️
-
-    </footer>
-
-
-</main>
-
-
-
-<script src="/app.js"></script>
-
+    <script src="/app.js"></script>
 
 </body>
 
