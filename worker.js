@@ -2,74 +2,126 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // إنشاء رسالة جديدة
-    if (url.pathname === "/api/message" && request.method === "POST") {
+    // إنشاء رابط رسالة
+    if (url.pathname === "/api/create" && request.method === "POST") {
       try {
-        const data = await request.json();
+        const body = await request.text();
 
-        if (!data.name || !data.message) {
-          return Response.json(
-            { error: "الاسم والرسالة مطلوبان" },
-            { status: 400 }
+        if (!body) {
+          return new Response(
+            JSON.stringify({ error: "لم تصل بيانات الرسالة" }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" }
+            }
           );
         }
 
-        const id = btoa(
-          unescape(
-            encodeURIComponent(
-              JSON.stringify({
-                name: data.name,
-                message: data.message
-              })
-            )
-          )
+        const data = JSON.parse(body);
+
+        if (!data.name || !data.message) {
+          return new Response(
+            JSON.stringify({ error: "الاسم والرسالة مطلوبان" }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" }
+            }
+          );
+        }
+
+        const payload = JSON.stringify({
+          name: data.name,
+          message: data.message
+        });
+
+        const encoded = btoa(
+          unescape(encodeURIComponent(payload))
         )
           .replace(/\+/g, "-")
           .replace(/\//g, "_")
-          .replace(/=/g, "");
+          .replace(/=+$/, "");
 
-        return Response.json({
-          success: true,
-          id
-        });
+        return new Response(
+          JSON.stringify({
+            success: true,
+            url: `${url.origin}/message/${encoded}`
+          }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
 
-      } catch {
-        return Response.json(
-          { error: "بيانات غير صحيحة" },
-          { status: 400 }
+      } catch (error) {
+        return new Response(
+          JSON.stringify({
+            error: "خطأ في إنشاء الرابط",
+            details: error.message
+          }),
+          {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
         );
       }
     }
 
-    // فتح رسالة
+    // قراءة الرسالة
     if (url.pathname.startsWith("/api/message/")) {
       try {
         const id = url.pathname.split("/").pop();
 
+        const base64 = id
+          .replace(/-/g, "+")
+          .replace(/_/g, "/")
+          .padEnd(id.length + (4 - id.length % 4) % 4, "=");
+
         const json = decodeURIComponent(
-          escape(
-            atob(
-              id
-                .replace(/-/g, "+")
-                .replace(/_/g, "/")
-                .padEnd(id.length + (4 - id.length % 4) % 4, "=")
-            )
-          )
+          escape(atob(base64))
         );
 
         const data = JSON.parse(json);
 
-        return Response.json(data);
+        return new Response(
+          JSON.stringify(data),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
 
-      } catch {
-        return Response.json(
-          { error: "الرابط غير صحيح أو تالف ❌" },
-          { status: 404 }
+      } catch (error) {
+        return new Response(
+          JSON.stringify({
+            error: "الرابط غير صحيح ❌"
+          }),
+          {
+            status: 404,
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
         );
       }
     }
 
-    // ملفات الموقع
+    // صفحة الرسالة
+    if (url.pathname.startsWith("/message/")) {
+      return env.ASSETS.fetch(
+        new Request(
+          new URL("/message.html", request.url),
+          request
+        )
+      );
+    }
+
+    // باقي ملفات الموقع
     return env.ASSETS.fetch(request);
   }
 };
