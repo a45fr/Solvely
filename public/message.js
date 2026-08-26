@@ -1,53 +1,49 @@
 const nameElement = document.getElementById("name");
 const messageElement = document.getElementById("message");
+
+const openScreen = document.getElementById("openScreen");
+const openMessage = document.getElementById("openMessage");
+const messageCard = document.getElementById("messageCard");
+
 const shareButton = document.getElementById("shareButton");
 
 
 // =====================================
-// قراءة بيانات الرسالة من الرابط
+// استخراج ID من الرابط
 // =====================================
 
-function getMessageData() {
+function getMessageId() {
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+    const parts =
+        window.location.pathname
+            .split("/")
+            .filter(Boolean);
 
-    const encoded =
-        params.get("data");
+    // الرابط الصحيح:
+    // /message/xxxxxxxxxxxx
 
-    if (!encoded) {
-        return null;
+    if (
+        parts[0] === "message" &&
+        parts[1]
+    ) {
+        return parts[1];
     }
 
-    try {
-
-        return JSON.parse(encoded);
-
-    } catch (error) {
-
-        console.error(
-            "Invalid message data:",
-            error
-        );
-
-        return null;
-    }
+    return null;
 }
 
 
 // =====================================
-// فتح الرسالة
+// جلب الرسالة من KV
 // =====================================
 
-function loadMessage() {
+async function loadMessage() {
 
-    const data =
-        getMessageData();
+    const id = getMessageId();
 
+    console.log("Message ID:", id);
 
-    if (!data) {
+    if (!id) {
 
         nameElement.textContent =
             "عذرًا";
@@ -59,28 +55,75 @@ function loadMessage() {
     }
 
 
-    // اسم الشخص
-    nameElement.textContent =
-        data.name || "شخص ما";
+    try {
+
+        const response =
+            await fetch(
+                `/api/message/${encodeURIComponent(id)}`
+            );
 
 
-    // نص الرسالة
-    messageElement.textContent =
-        data.message || "لا توجد رسالة 💌";
+        const data =
+            await response.json();
 
 
-    // إظهار بطاقة الرسالة
-    const card =
-        document.querySelector(
-            ".message-card"
-        );
+        console.log("Message data:", data);
 
-    if (card) {
 
-        card.style.display =
-            "block";
+        if (!response.ok) {
 
+            throw new Error(
+                data.error ||
+                "تعذر فتح الرسالة ❌"
+            );
+        }
+
+
+        // تخزين البيانات بالصفحة
+        nameElement.textContent =
+            data.name || "شخص ما";
+
+        messageElement.textContent =
+            data.message || "لا توجد رسالة";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        nameElement.textContent =
+            "عذرًا";
+
+        messageElement.textContent =
+            error.message ||
+            "تعذر تحميل الرسالة ❌";
     }
+}
+
+
+// =====================================
+// زر فتح الرسالة
+// =====================================
+
+if (openMessage) {
+
+    openMessage.addEventListener(
+        "click",
+        () => {
+
+            openScreen.style.display =
+                "none";
+
+            messageCard.style.display =
+                "block";
+
+            messageCard.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+    );
 
 }
 
