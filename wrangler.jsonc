@@ -1,10 +1,15 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "solvely",
   "main": "worker.js",
   "compatibility_date": "2026-08-25",
   "assets": {
-    "directory": "./public",
-    "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
-  }
+    "directory": "./public"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SOLVELY_MESSAGES",
+      "id": "d101132c3a8340689ab4c1a1934d8d26"
+    }
+  ]
 }
