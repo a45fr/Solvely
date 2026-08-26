@@ -1,84 +1,53 @@
 const nameElement =
-    document.getElementById("name");
+  document.getElementById("name");
 
 const messageElement =
-    document.getElementById("message");
+  document.getElementById("message");
 
 const shareButton =
-    document.getElementById("shareButton");
+  document.getElementById("shareButton");
 
 
 // ==============================
-// الحصول على ID من الرابط
+// قراءة الرسالة من الرابط
 // ==============================
 
-const pathParts =
-    window.location.pathname.split("/");
+function loadMessage() {
+  try {
+    const params =
+      new URLSearchParams(window.location.search);
 
-const messageId =
-    pathParts[pathParts.length - 1];
+    const encoded =
+      params.get("data");
 
-
-// ==============================
-// تحميل الرسالة
-// ==============================
-
-async function loadMessage() {
-
-    if (!messageId) {
-
-        messageElement.textContent =
-            "الرابط غير صحيح ❌";
-
-        return;
+    if (!encoded) {
+      throw new Error("الرابط غير صحيح ❌");
     }
 
+    const data =
+      JSON.parse(
+        decodeURIComponent(encoded)
+      );
 
-    try {
-
-        const response =
-            await fetch(
-                `/api/message/${encodeURIComponent(messageId)}`
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                "تعذر فتح الرسالة"
-            );
-
-        }
-
-
-        // اسم الشخص
-
-        nameElement.textContent =
-            data.name;
-
-
-        // الرسالة
-
-        messageElement.textContent =
-            data.message;
-
-
-    } catch (error) {
-
-        nameElement.textContent =
-            "عذرًا";
-
-        messageElement.textContent =
-            error.message ||
-            "تعذر تحميل الرسالة ❌";
-
+    if (!data.name || !data.message) {
+      throw new Error("الرسالة غير موجودة ❌");
     }
 
+    nameElement.textContent =
+      data.name;
+
+    messageElement.textContent =
+      data.message;
+
+  } catch (error) {
+
+    nameElement.textContent =
+      "عذرًا";
+
+    messageElement.textContent =
+      error.message ||
+      "تعذر فتح الرسالة ❌";
+  }
 }
 
 
@@ -87,15 +56,12 @@ async function loadMessage() {
 // ==============================
 
 shareButton.addEventListener(
-    "click",
-    () => {
-
-        window.location.href = "/";
-
-    }
+  "click",
+  () => {
+    window.location.href = "/";
+  }
 );
 
 
-// تشغيل التحميل
-
+// تشغيل
 loadMessage();
