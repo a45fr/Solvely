@@ -1,224 +1,259 @@
 export default {
-    async fetch(request, env) {
+  async fetch(request, env) {
 
-        const url = new URL(request.url);
-        const path = url.pathname;
-
-
-        // =====================================
-        // إنشاء رسالة جديدة
-        // =====================================
-
-        if (
-            path === "/api/create" &&
-            request.method === "POST"
-        ) {
-
-            try {
-
-                const body =
-                    await request.json();
-
-                const name =
-                    String(body.name || "").trim();
-
-                const message =
-                    String(body.message || "").trim();
+    const url = new URL(request.url);
+    const path = url.pathname;
 
 
-                if (!name) {
+    // =====================================
+    // إنشاء رسالة جديدة
+    // =====================================
 
-                    return Response.json(
-                        {
-                            error:
-                                "اسم الشخص مطلوب"
-                        },
-                        {
-                            status: 400
-                        }
-                    );
-                }
+    if (
+      path === "/api/create" &&
+      request.method === "POST"
+    ) {
 
+      try {
 
-                if (!message) {
+        const body = await request.json();
 
-                    return Response.json(
-                        {
-                            error:
-                                "الرسالة مطلوبة"
-                        },
-                        {
-                            status: 400
-                        }
-                    );
-                }
+        const name =
+          String(body.name || "").trim();
+
+        const message =
+          String(body.message || "").trim();
 
 
-                if (message.length > 1000) {
+        // التحقق من الاسم
 
-                    return Response.json(
-                        {
-                            error:
-                                "الرسالة طويلة جدًا"
-                        },
-                        {
-                            status: 400
-                        }
-                    );
-                }
+        if (!name) {
 
-
-                // إنشاء ID عشوائي
-
-                const id =
-                    crypto.randomUUID()
-                        .replaceAll("-", "")
-                        .slice(0, 12);
-
-
-                // تخزين الرسالة
-
-                await env.KV.put(
-                    `message:${id}`,
-                    JSON.stringify({
-                        name,
-                        message,
-                        createdAt:
-                            Date.now()
-                    })
-                );
-
-
-                // الرابط
-
-                const messageUrl =
-                    `${url.origin}/message/${id}`;
-
-
-                return Response.json({
-                    success: true,
-                    url: messageUrl,
-                    id
-                });
-
-            } catch (error) {
-
-                return Response.json(
-                    {
-                        error:
-                            "تعذر إنشاء الرسالة"
-                    },
-                    {
-                        status: 500
-                    }
-                );
+          return Response.json(
+            {
+              error: "اسم الشخص مطلوب"
+            },
+            {
+              status: 400
             }
+          );
+
         }
 
 
+        // التحقق من الرسالة
 
-        // =====================================
-        // جلب رسالة
-        // =====================================
+        if (!message) {
 
-        if (
-            path.startsWith("/api/message/") &&
-            request.method === "GET"
-        ) {
-
-            try {
-
-                const id =
-                    decodeURIComponent(
-                        path.replace(
-                            "/api/message/",
-                            ""
-                        )
-                    );
-
-
-                if (!id) {
-
-                    return Response.json(
-                        {
-                            error:
-                                "الرابط غير صحيح"
-                        },
-                        {
-                            status: 400
-                        }
-                    );
-                }
-
-
-                const stored =
-                    await env.KV.get(
-                        `message:${id}`
-                    );
-
-
-                if (!stored) {
-
-                    return Response.json(
-                        {
-                            error:
-                                "الرسالة غير موجودة أو انتهت"
-                        },
-                        {
-                            status: 404
-                        }
-                    );
-                }
-
-
-                const data =
-                    JSON.parse(stored);
-
-
-                return Response.json({
-                    name: data.name,
-                    message: data.message
-                });
-
-            } catch (error) {
-
-                return Response.json(
-                    {
-                        error:
-                            "تعذر فتح الرسالة"
-                    },
-                    {
-                        status: 500
-                    }
-                );
+          return Response.json(
+            {
+              error: "الرسالة مطلوبة"
+            },
+            {
+              status: 400
             }
+          );
+
         }
 
 
+        // الحد الأقصى للرسالة
 
-        // =====================================
-        // صفحة الرسالة
-        // /message/XXXXXXXX
-        // =====================================
+        if (message.length > 500) {
 
-        if (
-            path.startsWith("/message/")
-        ) {
+          return Response.json(
+            {
+              error: "الرسالة طويلة جدًا"
+            },
+            {
+              status: 400
+            }
+          );
 
-            return env.ASSETS.fetch(
-                new Request(
-                    `${url.origin}/message.html`,
-                    request
-                )
-            );
         }
 
 
+        // إنشاء ID
 
-        // =====================================
-        // باقي ملفات الموقع
-        // =====================================
+        const id =
+          crypto.randomUUID()
+            .replaceAll("-", "")
+            .slice(0, 12);
 
-        return env.ASSETS.fetch(request);
+
+        // تخزين الرسالة في KV
+
+        await env.KV.put(
+          `message:${id}`,
+          JSON.stringify({
+            name: name,
+            message: message,
+            createdAt: Date.now()
+          })
+        );
+
+
+        // إنشاء الرابط
+
+        const messageUrl =
+          `${url.origin}/message/${id}`;
+
+
+        return Response.json({
+          success: true,
+          url: messageUrl,
+          id: id
+        });
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        return Response.json(
+          {
+            error: "تعذر إنشاء الرسالة"
+          },
+          {
+            status: 500
+          }
+        );
+
+      }
+
     }
+
+
+
+    // =====================================
+    // جلب الرسالة
+    // =====================================
+
+    if (
+      path.startsWith("/api/message/") &&
+      request.method === "GET"
+    ) {
+
+      try {
+
+        const id =
+          decodeURIComponent(
+            path.replace(
+              "/api/message/",
+              ""
+            )
+          );
+
+
+        if (!id) {
+
+          return Response.json(
+            {
+              error: "الرابط غير صحيح"
+            },
+            {
+              status: 400
+            }
+          );
+
+        }
+
+
+        // جلب الرسالة من KV
+
+        const stored =
+          await env.KV.get(
+            `message:${id}`
+          );
+
+
+        if (!stored) {
+
+          return Response.json(
+            {
+              error:
+                "الرسالة غير موجودة أو انتهت"
+            },
+            {
+              status: 404
+            }
+          );
+
+        }
+
+
+        const data =
+          JSON.parse(stored);
+
+
+        return Response.json({
+          name: data.name,
+          message: data.message
+        });
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        return Response.json(
+          {
+            error: "تعذر فتح الرسالة"
+          },
+          {
+            status: 500
+          }
+        );
+
+      }
+
+    }
+
+
+
+    // =====================================
+    // صفحة الرسالة
+    // =====================================
+    //
+    // مهم جدًا:
+    //
+    // لا نطلب /message.html
+    // لأن Cloudflare يحوله إلى /message
+    // ويضيع ID الموجود بالرابط.
+    //
+    // نطلب /message داخليًا،
+    // لكن رابط المستخدم يبقى:
+    //
+    // /message/XXXXXXXX
+    //
+    // =====================================
+
+    if (
+      path.startsWith("/message/")
+    ) {
+
+      const assetRequest =
+        new Request(
+          `${url.origin}/message`,
+          request
+        );
+
+
+      return env.ASSETS.fetch(
+        assetRequest
+      );
+
+    }
+
+
+
+    // =====================================
+    // باقي ملفات الموقع
+    // =====================================
+
+    return env.ASSETS.fetch(
+      request
+    );
+
+  }
 };
