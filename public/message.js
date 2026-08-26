@@ -1,54 +1,54 @@
-const nameElement =
-    document.getElementById("name");
+const nameElement = document.getElementById("name");
+const messageElement = document.getElementById("message");
 
-const messageElement =
-    document.getElementById("message");
-
-const shareButton =
-    document.getElementById("shareButton");
-
-const openScreen =
-    document.getElementById("openScreen");
-
-const messageCard =
-    document.getElementById("messageCard");
-
-const openButton =
-    document.getElementById("openMessage");
-
-const envelope =
-    document.getElementById("envelope");
+const shareButton = document.getElementById("shareButton");
+const openScreen = document.getElementById("openScreen");
+const messageCard = document.getElementById("messageCard");
+const openButton = document.getElementById("openMessage");
+const envelope = document.getElementById("envelope");
 
 
-// =================================
-// الحصول على ID من الرابط
-// =================================
+// =====================================
+// الحصول على ID الرسالة من الرابط
+// =====================================
 
-const parts =
-    window.location.pathname
+function getMessageId() {
+
+    const parts = window.location.pathname
         .split("/")
         .filter(Boolean);
 
-const messageId =
-    parts[parts.length - 1];
+    const messageIndex =
+        parts.indexOf("message");
+
+    if (
+        messageIndex === -1 ||
+        !parts[messageIndex + 1]
+    ) {
+        return null;
+    }
+
+    return parts[messageIndex + 1];
+}
 
 
-// =================================
-// جلب الرسالة
-// =================================
+const messageId = getMessageId();
+
+
+// =====================================
+// تحميل الرسالة
+// =====================================
 
 async function loadMessage() {
 
-    if (
-        !messageId ||
-        messageId === "message"
-    ) {
+    if (!messageId) {
 
-        nameElement.textContent =
-            "عذرًا";
+        nameElement.textContent = "عذرًا";
 
         messageElement.textContent =
             "الرابط غير صحيح ❌";
+
+        openScreen.style.display = "none";
 
         return;
     }
@@ -56,39 +56,65 @@ async function loadMessage() {
 
     try {
 
-        const response =
-            await fetch(
-                `/api/message/${encodeURIComponent(messageId)}`
+        const response = await fetch(
+            `/api/message/${encodeURIComponent(messageId)}`,
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
+        );
+
+
+        const text = await response.text();
+
+
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch {
+
+            throw new Error(
+                "السيرفر رجّع استجابة غير صحيحة"
             );
-
-
-        const data =
-            await response.json();
+        }
 
 
         if (!response.ok) {
 
             throw new Error(
                 data.error ||
-                "تعذر فتح الرسالة"
+                "تعذر فتح الرسالة ❌"
             );
-
         }
 
 
-        // الاسم
+        if (
+            !data.name ||
+            !data.message
+        ) {
+
+            throw new Error(
+                "بيانات الرسالة ناقصة ❌"
+            );
+        }
+
 
         nameElement.textContent =
             data.name;
-
-
-        // الرسالة
 
         messageElement.textContent =
             data.message;
 
 
     } catch (error) {
+
+        console.error(
+            "Message error:",
+            error
+        );
 
         nameElement.textContent =
             "عذرًا";
@@ -97,33 +123,26 @@ async function loadMessage() {
             error.message ||
             "تعذر تحميل الرسالة ❌";
 
+        openScreen.style.display =
+            "none";
     }
-
 }
 
 
-// =================================
+// =====================================
 // فتح الرسالة
-// =================================
+// =====================================
 
 openButton.addEventListener(
     "click",
     () => {
 
-        // حركة الظرف
-
         envelope.style.transform =
             "scale(1.25) rotate(8deg)";
 
+        openButton.disabled = true;
 
-        openButton.disabled =
-            true;
-
-
-        // إخفاء شاشة الانتظار
-
-        openScreen.style.opacity =
-            "0";
+        openScreen.style.opacity = "0";
 
         openScreen.style.transform =
             "translateY(15px) scale(.96)";
@@ -134,12 +153,8 @@ openButton.addEventListener(
             openScreen.style.display =
                 "none";
 
-
-            // إظهار الرسالة
-
             messageCard.style.display =
                 "block";
-
 
             messageCard.style.opacity =
                 "0";
@@ -155,31 +170,28 @@ openButton.addEventListener(
 
                 messageCard.style.transform =
                     "translateY(0) scale(1)";
-
             });
 
         }, 450);
-
     }
 );
 
 
-// =================================
-// زر إنشاء رسالة جديدة
-// =================================
+// =====================================
+// إنشاء رسالة جديدة
+// =====================================
 
 shareButton.addEventListener(
     "click",
     () => {
 
         window.location.href = "/";
-
     }
 );
 
 
-// =================================
+// =====================================
 // تشغيل
-// =================================
+// =====================================
 
 loadMessage();
