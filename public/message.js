@@ -19,9 +19,12 @@ const envelope =
 const shareButton =
     document.getElementById("shareButton");
 
+const particles =
+    document.getElementById("particles");
+
 
 // =====================================
-// الحصول على ID الرسالة من الرابط
+// الحصول على ID الرسالة
 // =====================================
 
 function getMessageId() {
@@ -46,7 +49,7 @@ function getMessageId() {
 
 
 // =====================================
-// تحميل الرسالة من KV
+// تحميل الرسالة
 // =====================================
 
 async function loadMessage() {
@@ -91,10 +94,7 @@ async function loadMessage() {
 
     } catch (error) {
 
-        console.error(
-            "Message loading error:",
-            error
-        );
+        console.error(error);
 
         nameElement.textContent =
             "عذرًا";
@@ -107,54 +107,57 @@ async function loadMessage() {
 
 
 // =====================================
-// إنشاء القلوب والتأثيرات
+// إنشاء الجزيئات
 // =====================================
 
-function createHearts() {
+function createParticles() {
 
-    const hearts = [
+    const symbols = [
         "❤️",
         "💗",
         "💕",
         "💖",
         "💜",
-        "✨"
+        "✨",
+        "♡",
+        "✦"
     ];
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 24; i++) {
 
-        const heart =
+        const particle =
             document.createElement("div");
 
-        heart.className =
+        particle.className =
             "heart-particle";
 
-        heart.textContent =
-            hearts[
+        particle.textContent =
+            symbols[
                 Math.floor(
                     Math.random() *
-                    hearts.length
+                    symbols.length
                 )
             ];
 
-        heart.style.left =
-            `${15 + Math.random() * 70}%`;
+        particle.style.left =
+            `${10 + Math.random() * 80}%`;
 
-        heart.style.bottom =
-            `${20 + Math.random() * 20}%`;
+        particle.style.top =
+            `${45 + Math.random() * 15}%`;
 
-        heart.style.animationDelay =
-            `${Math.random() * 0.5}s`;
+        particle.style.animationDelay =
+            `${Math.random() * 0.6}s`;
 
-        document.body.appendChild(
-            heart
+        particle.style.fontSize =
+            `${12 + Math.random() * 14}px`;
+
+        particles.appendChild(
+            particle
         );
 
         setTimeout(() => {
-
-            heart.remove();
-
-        }, 2200);
+            particle.remove();
+        }, 2600);
     }
 }
 
@@ -172,71 +175,42 @@ if (openButton) {
             openButton.disabled =
                 true;
 
-            openButton.textContent =
-                "جاري فتح الرسالة... 💌";
+            openButton.innerHTML =
+                "جاري فتحها... 💌";
 
 
-            // حركة الظرف
+            createParticles();
+
 
             if (envelope) {
 
-                envelope.style.transform =
-                    "scale(1.25) rotate(8deg)";
+                envelope.classList.add(
+                    "envelope-opening"
+                );
             }
 
 
-            // إطلاق القلوب
-
-            createHearts();
-
-
-            // بداية إخفاء شاشة الفتح
-
             setTimeout(() => {
 
-                openScreen.style.opacity =
-                    "0";
+                openScreen.classList.add(
+                    "screen-closing"
+                );
 
-                openScreen.style.transform =
-                    "translateY(20px) scale(.95)";
+            }, 250);
 
-            }, 150);
-
-
-            // إظهار الرسالة
 
             setTimeout(() => {
 
                 openScreen.style.display =
                     "none";
 
-
                 messageCard.style.display =
                     "block";
 
-                messageCard.style.opacity =
-                    "0";
+                messageCard.classList.add(
+                    "message-enter"
+                );
 
-                messageCard.style.transform =
-                    "translateY(25px) scale(.92)";
-
-
-                requestAnimationFrame(() => {
-
-                    messageCard.style.opacity =
-                        "1";
-
-                    messageCard.style.transform =
-                        "translateY(0) scale(1)";
-
-                    messageCard.classList.add(
-                        "message-opened"
-                    );
-
-                });
-
-
-                // النزول للرسالة
 
                 setTimeout(() => {
 
@@ -245,19 +219,17 @@ if (openButton) {
                         block: "center"
                     });
 
-                }, 200);
+                }, 250);
 
-
-            }, 600);
+            }, 700);
 
         }
     );
-
 }
 
 
 // =====================================
-// زر إنشاء رسالة جديدة
+// رسالة جديدة
 // =====================================
 
 if (shareButton) {
@@ -275,7 +247,7 @@ if (shareButton) {
 
 
 // =====================================
-// تشغيل الموقع
+// التشغيل
 // =====================================
 
 loadMessage();
