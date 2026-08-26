@@ -1,84 +1,38 @@
 const nameElement = document.getElementById("name");
 const messageElement = document.getElementById("message");
-
-const openScreen = document.getElementById("openScreen");
-const openMessage = document.getElementById("openMessage");
-const messageCard = document.getElementById("messageCard");
-
 const shareButton = document.getElementById("shareButton");
 
 
 // =====================================
-// استخراج ID الرسالة
+// قراءة بيانات الرسالة من الرابط
 // =====================================
 
-function getMessageId() {
+function getMessageData() {
 
-    const parts =
-        window.location.pathname
-            .split("/")
-            .filter(Boolean);
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
 
-    const index =
-        parts.indexOf("message");
+    const encoded =
+        params.get("data");
 
-    if (index !== -1 && parts[index + 1]) {
-        return parts[index + 1];
-    }
-
-    return null;
-}
-
-
-// =====================================
-// تحميل الرسالة
-// =====================================
-
-async function loadMessage() {
-
-    const id = getMessageId();
-
-    if (!id) {
-
-        messageElement.textContent =
-            "الرابط غير صحيح ❌";
-
-        return;
+    if (!encoded) {
+        return null;
     }
 
     try {
 
-        const response = await fetch(
-            `/api/message/${encodeURIComponent(id)}`
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                "تعذر فتح الرسالة ❌"
-            );
-        }
-
-        // نخزن البيانات بدون إظهارها
-        nameElement.textContent =
-            data.name || "شخص";
-
-        messageElement.textContent =
-            data.message || "لا توجد رسالة";
+        return JSON.parse(encoded);
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Invalid message data:",
+            error
+        );
 
-        nameElement.textContent =
-            "عذرًا";
-
-        messageElement.textContent =
-            error.message ||
-            "تعذر تحميل الرسالة ❌";
+        return null;
     }
 }
 
@@ -87,38 +41,52 @@ async function loadMessage() {
 // فتح الرسالة
 // =====================================
 
-if (openMessage) {
+function loadMessage() {
 
-    openMessage.addEventListener(
-        "click",
-        () => {
+    const data =
+        getMessageData();
 
-            // إخفاء ظرف الرسالة
-            openScreen.style.display =
-                "none";
 
-            // إظهار الرسالة
-            messageCard.style.display =
-                "block";
+    if (!data) {
 
-            // نزول بسيط للرسالة
-            setTimeout(() => {
+        nameElement.textContent =
+            "عذرًا";
 
-                messageCard.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
+        messageElement.textContent =
+            "الرابط غير صحيح ❌";
 
-            }, 100);
+        return;
+    }
 
-        }
-    );
+
+    // اسم الشخص
+    nameElement.textContent =
+        data.name || "شخص ما";
+
+
+    // نص الرسالة
+    messageElement.textContent =
+        data.message || "لا توجد رسالة 💌";
+
+
+    // إظهار بطاقة الرسالة
+    const card =
+        document.querySelector(
+            ".message-card"
+        );
+
+    if (card) {
+
+        card.style.display =
+            "block";
+
+    }
 
 }
 
 
 // =====================================
-// إرسال رسالة جديدة
+// زر إرسال رسالة جديدة
 // =====================================
 
 if (shareButton) {
@@ -128,6 +96,7 @@ if (shareButton) {
         () => {
 
             window.location.href = "/";
+
         }
     );
 
