@@ -2,71 +2,141 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <meta name="theme-color" content="#0d0a16">
+    <meta
+        name="theme-color"
+        content="#090611"
+    >
 
-    <title>رسالة إليك 💌</title>
+    <title>
+        رسالة إليك 💌
+    </title>
 
-    <link rel="stylesheet" href="/style.css">
+    <link
+        rel="stylesheet"
+        href="/style.css"
+    >
+
 </head>
+
 
 <body>
 
+
 <div class="background">
+
     <div class="orb orb-one"></div>
     <div class="orb orb-two"></div>
     <div class="orb orb-three"></div>
+
+    <div class="stars">
+        ✦　·　✧　　·　✦　·　✧
+    </div>
+
 </div>
+
+
 
 <main class="home">
 
-    <div class="brand">
-        <div class="brand-icon">💌</div>
-        <span>Solvely</span>
-    </div>
+
+    <!-- الشعار -->
+
+    <header class="brand">
+
+        <div class="brand-icon">
+            💌
+        </div>
+
+        <div>
+
+            <strong>
+                Solvely
+            </strong>
+
+            <small>
+                رسالة من القلب
+            </small>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- المقدمة -->
 
     <section class="hero">
 
-        <div class="hero-icon" id="envelope">
+        <div class="hero-badge">
+            💌 عندك رسالة خاصة
+        </div>
+
+        <div
+            class="hero-icon"
+            id="envelope"
+        >
             💌
         </div>
 
         <h1>
-            عندك رسالة 💗
+
+            <span id="name">
+                شخص
+            </span>
+
+            ، عندك رسالة
+
         </h1>
 
         <p>
-            <span id="name">...</span>
-            ، شخص ما ترك لك شيئًا خاصًا ✨
+            شخص ما ترك لك كلامًا
+            ما أراد يوصله بالطريقة العادية ✨
         </p>
 
     </section>
 
-    <!-- شاشة فتح الرسالة -->
-    <section id="openScreen" class="message-card">
+
+
+    <!-- شاشة الفتح -->
+
+    <section
+        id="openScreen"
+        class="card message-card"
+    >
 
         <div class="big-envelope">
             💌
         </div>
 
         <h2>
-            رسالة خاصة إليك
+            في رسالة تنتظرك
         </h2>
 
         <p>
-            اضغط حتى تكتشف شنو مكتوب إلك 👀
+            اضغط الزر واكتشف شنو مكتوب إلك
         </p>
 
-        <button id="openMessage" class="open-btn">
+        <button
+            id="openMessage"
+            class="open-btn"
+        >
             افتح رسالتك 💗
         </button>
 
     </section>
 
+
+
     <!-- الرسالة -->
+
     <section
         id="messageCard"
         class="result message-card"
@@ -78,7 +148,7 @@
         </div>
 
         <h2>
-            إليك رسالة خاصة
+            رسالة خاصة إليك
         </h2>
 
         <div
@@ -94,6 +164,10 @@
 
     </section>
 
+
+
+    <!-- زر إنشاء رسالة -->
+
     <button
         id="shareButton"
         class="share-btn"
@@ -101,63 +175,76 @@
         أرسل رسالة أنت أيضًا ✨
     </button>
 
-    <div class="features">
 
-        <div>
-            <span>🔒</span>
-            <p>خاص</p>
+
+    <!-- المميزات -->
+
+    <section class="features">
+
+        <div class="feature">
+
+            <div>
+                🔒
+            </div>
+
+            <span>
+                خاصة
+            </span>
+
         </div>
 
-        <div>
-            <span>💌</span>
-            <p>رسالة</p>
+
+        <div class="feature">
+
+            <div>
+                💌
+            </div>
+
+            <span>
+                من القلب
+            </span>
+
         </div>
 
-        <div>
-            <span>✨</span>
-            <p>Solvely</p>
+
+        <div class="feature">
+
+            <div>
+                ✨
+            </div>
+
+            <span>
+                Solvely
+            </span>
+
         </div>
 
-    </div>
+    </section>
+
+
 
     <footer>
-        Solvely
-        <span>•</span>
+
+        <strong>
+            Solvely
+        </strong>
+
+        <span>
+            •
+        </span>
+
         رسالتك، بطريقتك ❤️
+
     </footer>
+
 
 </main>
 
+
+
 <script src="/message.js"></script>
 
-<script>
-    const openButton = document.getElementById("openMessage");
-    const openScreen = document.getElementById("openScreen");
-    const messageCard = document.getElementById("messageCard");
-    const envelope = document.getElementById("envelope");
-
-    openButton.addEventListener("click", () => {
-
-        envelope.style.transform = "scale(1.2) rotate(8deg)";
-
-        openScreen.style.opacity = "0";
-        openScreen.style.transform = "scale(0.9)";
-
-        setTimeout(() => {
-
-            openScreen.style.display = "none";
-
-            messageCard.style.display = "block";
-
-            setTimeout(() => {
-                messageCard.style.opacity = "1";
-                messageCard.style.transform = "translateY(0) scale(1)";
-            }, 50);
-
-        }, 400);
-
-    });
-</script>
 
 </body>
+
 </html>
