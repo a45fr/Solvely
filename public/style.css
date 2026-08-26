@@ -976,3 +976,202 @@ footer strong {
         opacity 0.4s ease,
         transform 0.4s ease;
 }
+
+/* =========================================
+   تأثيرات فتح الرسالة - Solvely
+========================================= */
+
+.big-envelope {
+    font-size: 64px;
+    animation: envelopeFloat 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 15px 25px rgba(255, 95, 162, 0.25));
+}
+
+@keyframes envelopeFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(3deg);
+    }
+}
+
+
+/* زر فتح الرسالة */
+
+.open-btn {
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.open-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(255, 79, 154, 0.25);
+}
+
+.open-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* لمعان يمر على الزر */
+
+.open-btn::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 60%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.18),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    animation:
+        buttonShine 3s ease-in-out infinite;
+}
+
+@keyframes buttonShine {
+
+    0% {
+        left: -100%;
+    }
+
+    45%, 100% {
+        left: 140%;
+    }
+}
+
+
+/* حركة بطاقة الرسالة */
+
+#messageCard {
+    transform-origin: center;
+}
+
+#messageCard .message-text {
+    animation:
+        messageReveal 0.8s ease both;
+}
+
+@keyframes messageReveal {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* تأثير الاسم */
+
+#name {
+    transition:
+        opacity 0.4s ease;
+}
+
+
+/* قلوب صغيرة */
+
+.heart-particle {
+    position: fixed;
+
+    pointer-events: none;
+
+    z-index: 100;
+
+    font-size: 18px;
+
+    animation:
+        heartRise 1.8s ease-out forwards;
+}
+
+@keyframes heartRise {
+
+    0% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(0.7)
+            rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translateY(-180px)
+            scale(1.3)
+            rotate(25deg);
+    }
+}
+
+
+/* نبضة عند فتح الرسالة */
+
+.message-opened {
+    animation:
+        cardPop 0.6s ease;
+}
+
+@keyframes cardPop {
+
+    0% {
+        transform:
+            scale(0.92);
+        opacity: 0;
+    }
+
+    60% {
+        transform:
+            scale(1.03);
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            scale(1);
+    }
+}
+
+
+/* تحسين الموبايل */
+
+@media (max-width: 480px) {
+
+    .big-envelope {
+        font-size: 58px;
+    }
+
+    .open-btn {
+        height: 54px;
+    }
+}
