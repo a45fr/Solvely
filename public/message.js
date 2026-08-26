@@ -1,16 +1,14 @@
-const nameElement =
-    document.getElementById("name");
+const nameElement = document.getElementById("name");
+const messageElement = document.getElementById("message");
+const shareButton = document.getElementById("shareButton");
 
-const messageElement =
-    document.getElementById("message");
-
-const shareButton =
-    document.getElementById("shareButton");
+const messageCard =
+    document.querySelector(".message-card");
 
 
-// =====================================
-// الحصول على ID الرسالة من الرابط
-// =====================================
+// ==============================
+// استخراج ID الرسالة
+// ==============================
 
 function getMessageId() {
 
@@ -19,82 +17,44 @@ function getMessageId() {
             .split("/")
             .filter(Boolean);
 
-    const messageIndex =
+    const index =
         parts.indexOf("message");
 
-    if (
-        messageIndex !== -1 &&
-        parts[messageIndex + 1]
-    ) {
-        return parts[messageIndex + 1];
+    if (index !== -1 && parts[index + 1]) {
+        return parts[index + 1];
     }
 
     return null;
 }
 
 
-// =====================================
+// ==============================
 // تحميل الرسالة
-// =====================================
+// ==============================
 
 async function loadMessage() {
 
-    const messageId =
-        getMessageId();
+    const messageId = getMessageId();
 
-
-    // إذا ماكو ID
     if (!messageId) {
-
-        nameElement.textContent =
-            "عذرًا";
-
         messageElement.textContent =
             "الرابط غير صحيح ❌";
-
         return;
     }
 
-
     try {
 
-        const response =
-            await fetch(
-                `/api/message/${encodeURIComponent(messageId)}`
-            );
+        const response = await fetch(
+            `/api/message/${encodeURIComponent(messageId)}`
+        );
 
-
-        const text =
-            await response.text();
-
-
-        let data;
-
-        try {
-
-            data =
-                JSON.parse(text);
-
-        } catch {
-
-            throw new Error(
-                "السيرفر لم يرجع بيانات صحيحة ❌"
-            );
-        }
-
+        const data = await response.json();
 
         if (!response.ok) {
-
             throw new Error(
-                data.error ||
-                "تعذر فتح الرسالة ❌"
+                data.error || "تعذر فتح الرسالة ❌"
             );
         }
-
-
-        // =================================
-        // عرض البيانات
-        // =================================
 
         nameElement.textContent =
             data.name || "شخص ما";
@@ -102,60 +62,48 @@ async function loadMessage() {
         messageElement.textContent =
             data.message || "لا توجد رسالة";
 
-
-        // إظهار بطاقة الرسالة
-        const result =
-            document.querySelector(".result");
-
-        if (result) {
-
-            result.classList.remove("hidden");
-
-            result.style.display =
-                "block";
-
-        }
-
-
     } catch (error) {
 
         console.error(error);
 
-        nameElement.textContent =
-            "عذرًا";
+        nameElement.textContent = "عذرًا";
 
         messageElement.textContent =
             error.message ||
             "تعذر تحميل الرسالة ❌";
+    }
+}
 
 
-        const result =
-            document.querySelector(".result");
+// ==============================
+// الضغط على خانة الرسالة
+// ==============================
 
-        if (result) {
+if (messageCard) {
 
-            result.classList.remove("hidden");
+    messageCard.addEventListener(
+        "click",
+        () => {
 
-            result.style.display =
-                "block";
+            messageCard.classList.toggle(
+                "opened"
+            );
 
         }
-
-    }
+    );
 
 }
 
 
-// =====================================
-// زر إرسال رسالة جديدة
-// =====================================
+// ==============================
+// زر إنشاء رسالة جديدة
+// ==============================
 
 if (shareButton) {
 
     shareButton.addEventListener(
         "click",
         () => {
-
             window.location.href = "/";
         }
     );
@@ -163,8 +111,8 @@ if (shareButton) {
 }
 
 
-// =====================================
+// ==============================
 // تشغيل
-// =====================================
+// ==============================
 
 loadMessage();
