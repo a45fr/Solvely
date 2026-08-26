@@ -2,9 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // =========================
-    // إنشاء رابط الرسالة
-    // =========================
+    // إنشاء الرابط
     if (url.pathname === "/api/create" && request.method === "POST") {
       try {
         const data = await request.json();
@@ -23,17 +21,19 @@ export default {
           );
         }
 
-        const payload = JSON.stringify({
+        const messageData = {
           name: data.name,
           message: data.message
-        });
+        };
 
-        const id = encodeURIComponent(payload);
+        const encoded = encodeURIComponent(
+          JSON.stringify(messageData)
+        );
 
         return new Response(
           JSON.stringify({
             success: true,
-            url: `${url.origin}/message/${id}`
+            url: `${url.origin}/message?data=${encoded}`
           }),
           {
             status: 200,
@@ -46,7 +46,7 @@ export default {
       } catch (error) {
         return new Response(
           JSON.stringify({
-            error: "تعذر إنشاء الرابط"
+            error: "حدث خطأ أثناء إنشاء الرابط"
           }),
           {
             status: 500,
@@ -58,50 +58,8 @@ export default {
       }
     }
 
-
-    // =========================
-    // فتح الرسالة
-    // =========================
-    if (url.pathname.startsWith("/api/message/")) {
-      try {
-        const id = url.pathname.substring(
-          "/api/message/".length
-        );
-
-        const data = JSON.parse(
-          decodeURIComponent(id)
-        );
-
-        return new Response(
-          JSON.stringify(data),
-          {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-
-      } catch (error) {
-        return new Response(
-          JSON.stringify({
-            error: "الرابط غير صحيح ❌"
-          }),
-          {
-            status: 404,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-      }
-    }
-
-
-    // =========================
-    // صفحة الرسالة
-    // =========================
-    if (url.pathname.startsWith("/message/")) {
+    // فتح صفحة الرسالة
+    if (url.pathname === "/message") {
       return env.ASSETS.fetch(
         new Request(
           new URL("/message.html", request.url),
@@ -110,10 +68,7 @@ export default {
       );
     }
 
-
-    // =========================
-    // باقي ملفات الموقع
-    // =========================
+    // باقي الموقع
     return env.ASSETS.fetch(request);
   }
 };
