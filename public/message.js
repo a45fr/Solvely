@@ -21,7 +21,7 @@ const shareButton =
 
 
 // =====================================
-// الحصول على ID الرسالة
+// الحصول على ID الرسالة من الرابط
 // =====================================
 
 function getMessageId() {
@@ -65,7 +65,6 @@ async function loadMessage() {
         return;
     }
 
-
     try {
 
         const response =
@@ -73,10 +72,8 @@ async function loadMessage() {
                 `/api/message/${encodeURIComponent(id)}`
             );
 
-
         const data =
             await response.json();
-
 
         if (!response.ok) {
 
@@ -86,22 +83,18 @@ async function loadMessage() {
             );
         }
 
-
-        // الاسم
-
         nameElement.textContent =
             data.name || "شخص ما";
-
-
-        // الرسالة
 
         messageElement.textContent =
             data.message || "لا توجد رسالة";
 
-
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Message loading error:",
+            error
+        );
 
         nameElement.textContent =
             "عذرًا";
@@ -114,102 +107,175 @@ async function loadMessage() {
 
 
 // =====================================
+// إنشاء القلوب والتأثيرات
+// =====================================
+
+function createHearts() {
+
+    const hearts = [
+        "❤️",
+        "💗",
+        "💕",
+        "💖",
+        "💜",
+        "✨"
+    ];
+
+    for (let i = 0; i < 12; i++) {
+
+        const heart =
+            document.createElement("div");
+
+        heart.className =
+            "heart-particle";
+
+        heart.textContent =
+            hearts[
+                Math.floor(
+                    Math.random() *
+                    hearts.length
+                )
+            ];
+
+        heart.style.left =
+            `${15 + Math.random() * 70}%`;
+
+        heart.style.bottom =
+            `${20 + Math.random() * 20}%`;
+
+        heart.style.animationDelay =
+            `${Math.random() * 0.5}s`;
+
+        document.body.appendChild(
+            heart
+        );
+
+        setTimeout(() => {
+
+            heart.remove();
+
+        }, 2200);
+    }
+}
+
+
+// =====================================
 // فتح الرسالة
 // =====================================
 
-openButton.addEventListener(
-    "click",
-    () => {
+if (openButton) {
 
-        openButton.disabled = true;
+    openButton.addEventListener(
+        "click",
+        () => {
 
-        openButton.textContent =
-            "جاري فتح الرسالة... 💌";
+            openButton.disabled =
+                true;
 
-
-        // حركة الظرف
-
-        envelope.style.transform =
-            "scale(1.2) rotate(8deg)";
+            openButton.textContent =
+                "جاري فتح الرسالة... 💌";
 
 
-        setTimeout(() => {
+            // حركة الظرف
 
-            // إخفاء شاشة الفتح
+            if (envelope) {
 
-            openScreen.style.opacity =
-                "0";
-
-            openScreen.style.transform =
-                "translateY(20px) scale(.95)";
+                envelope.style.transform =
+                    "scale(1.25) rotate(8deg)";
+            }
 
 
-        }, 150);
+            // إطلاق القلوب
+
+            createHearts();
 
 
-        setTimeout(() => {
-
-            openScreen.style.display =
-                "none";
-
-
-            // إظهار الرسالة
-
-            messageCard.style.display =
-                "block";
-
-            messageCard.style.opacity =
-                "0";
-
-            messageCard.style.transform =
-                "translateY(25px) scale(.96)";
-
-
-            requestAnimationFrame(() => {
-
-                messageCard.style.opacity =
-                    "1";
-
-                messageCard.style.transform =
-                    "translateY(0) scale(1)";
-
-            });
-
-
-            // نزول للرسالة
+            // بداية إخفاء شاشة الفتح
 
             setTimeout(() => {
 
-                messageCard.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
+                openScreen.style.opacity =
+                    "0";
+
+                openScreen.style.transform =
+                    "translateY(20px) scale(.95)";
 
             }, 150);
 
 
-        }, 550);
+            // إظهار الرسالة
 
-    }
-);
+            setTimeout(() => {
+
+                openScreen.style.display =
+                    "none";
+
+
+                messageCard.style.display =
+                    "block";
+
+                messageCard.style.opacity =
+                    "0";
+
+                messageCard.style.transform =
+                    "translateY(25px) scale(.92)";
+
+
+                requestAnimationFrame(() => {
+
+                    messageCard.style.opacity =
+                        "1";
+
+                    messageCard.style.transform =
+                        "translateY(0) scale(1)";
+
+                    messageCard.classList.add(
+                        "message-opened"
+                    );
+
+                });
+
+
+                // النزول للرسالة
+
+                setTimeout(() => {
+
+                    messageCard.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                }, 200);
+
+
+            }, 600);
+
+        }
+    );
+
+}
 
 
 // =====================================
-// إنشاء رسالة جديدة
+// زر إنشاء رسالة جديدة
 // =====================================
 
-shareButton.addEventListener(
-    "click",
-    () => {
+if (shareButton) {
 
-        window.location.href = "/";
+    shareButton.addEventListener(
+        "click",
+        () => {
 
-    }
-);
+            window.location.href = "/";
+
+        }
+    );
+
+}
 
 
 // =====================================
-// تشغيل
+// تشغيل الموقع
 // =====================================
 
 loadMessage();
