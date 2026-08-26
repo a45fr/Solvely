@@ -1,14 +1,16 @@
 const nameElement = document.getElementById("name");
 const messageElement = document.getElementById("message");
+
+const openScreen = document.getElementById("openScreen");
+const openMessage = document.getElementById("openMessage");
+const messageCard = document.getElementById("messageCard");
+
 const shareButton = document.getElementById("shareButton");
 
-const messageCard =
-    document.querySelector(".message-card");
 
-
-// ==============================
+// =====================================
 // استخراج ID الرسالة
-// ==============================
+// =====================================
 
 function getMessageId() {
 
@@ -28,36 +30,41 @@ function getMessageId() {
 }
 
 
-// ==============================
+// =====================================
 // تحميل الرسالة
-// ==============================
+// =====================================
 
 async function loadMessage() {
 
-    const messageId = getMessageId();
+    const id = getMessageId();
 
-    if (!messageId) {
+    if (!id) {
+
         messageElement.textContent =
             "الرابط غير صحيح ❌";
+
         return;
     }
 
     try {
 
         const response = await fetch(
-            `/api/message/${encodeURIComponent(messageId)}`
+            `/api/message/${encodeURIComponent(id)}`
         );
 
         const data = await response.json();
 
         if (!response.ok) {
+
             throw new Error(
-                data.error || "تعذر فتح الرسالة ❌"
+                data.error ||
+                "تعذر فتح الرسالة ❌"
             );
         }
 
+        // نخزن البيانات بدون إظهارها
         nameElement.textContent =
-            data.name || "شخص ما";
+            data.name || "شخص";
 
         messageElement.textContent =
             data.message || "لا توجد رسالة";
@@ -66,7 +73,8 @@ async function loadMessage() {
 
         console.error(error);
 
-        nameElement.textContent = "عذرًا";
+        nameElement.textContent =
+            "عذرًا";
 
         messageElement.textContent =
             error.message ||
@@ -75,19 +83,33 @@ async function loadMessage() {
 }
 
 
-// ==============================
-// الضغط على خانة الرسالة
-// ==============================
+// =====================================
+// فتح الرسالة
+// =====================================
 
-if (messageCard) {
+if (openMessage) {
 
-    messageCard.addEventListener(
+    openMessage.addEventListener(
         "click",
         () => {
 
-            messageCard.classList.toggle(
-                "opened"
-            );
+            // إخفاء ظرف الرسالة
+            openScreen.style.display =
+                "none";
+
+            // إظهار الرسالة
+            messageCard.style.display =
+                "block";
+
+            // نزول بسيط للرسالة
+            setTimeout(() => {
+
+                messageCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }, 100);
 
         }
     );
@@ -95,15 +117,16 @@ if (messageCard) {
 }
 
 
-// ==============================
-// زر إنشاء رسالة جديدة
-// ==============================
+// =====================================
+// إرسال رسالة جديدة
+// =====================================
 
 if (shareButton) {
 
     shareButton.addEventListener(
         "click",
         () => {
+
             window.location.href = "/";
         }
     );
@@ -111,8 +134,8 @@ if (shareButton) {
 }
 
 
-// ==============================
+// =====================================
 // تشغيل
-// ==============================
+// =====================================
 
 loadMessage();
