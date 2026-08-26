@@ -955,3 +955,24 @@ footer strong {
         gap: 6px;
     }
 }
+
+.message-card {
+    cursor: pointer;
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.message-card:hover {
+    transform: translateY(-3px);
+}
+
+.message-card.opened {
+    transform: scale(1.02);
+}
+
+.message-card .message-text {
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+}
